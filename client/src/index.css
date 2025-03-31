@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 30% 98%;
+    --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 175 41% 29%;
+    --primary-foreground: 210 40% 98%;
+    
+    --primary-light: 175 41% 36%;
+    --primary-dark: 175 41% 23%;
+    
+    --secondary: 34 41% 84%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary-light: 34 41% 91%;
+    --secondary-dark: 34 41% 77%;
+    
+    --accent: 43 35% 50%;
+    --accent-foreground: 210 40% 98%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 175 41% 29%;
+    
+    --radius: 0.5rem;
+    
+    --neutral-light: 60 30% 98%;
+    --neutral-dark: 220 6% 20%;
+    --neutral-mid: 220 6% 40%;
+    
+    --chart-1: 175 41% 29%;
+    --chart-2: 34 41% 84%;
+    --chart-3: 43 35% 50%;
+    --chart-4: 220 6% 40%;
+    --chart-5: 0 0% 0%;
+  }
+  
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    font-family: 'Montserrat', sans-serif;
+    @apply bg-background text-foreground antialiased;
+  }
+  
+  .font-heading {
+    font-family: 'Cormorant Garamond', serif;
+  }
+  
+  .font-accent {
+    font-family: 'Raleway', sans-serif;
+  }
+  
+  .scent-profile-marker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: hsl(var(--accent));
+    position: absolute;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
+  }
+  
+  .scent-profile-marker:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
