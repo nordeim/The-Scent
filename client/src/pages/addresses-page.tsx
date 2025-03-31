@@ -179,14 +179,25 @@ export default function AddressesPage() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof addressFormSchema>) => {
-    if (isEditMode && currentAddress) {
-      updateAddressMutation.mutate({
-        id: currentAddress.id,
-        address: data,
-      });
-    } else {
-      createAddressMutation.mutate(data);
+  const onSubmit = async (data: z.infer<typeof addressFormSchema>) => {
+    try {
+      // Convert null values to undefined to satisfy TypeScript
+      const formattedData = {
+        ...data,
+        addressLine2: data.addressLine2 || undefined,
+        isDefault: data.isDefault === null ? false : data.isDefault
+      };
+      
+      if (isEditMode && currentAddress) {
+        await updateAddressMutation.mutateAsync({
+          id: currentAddress.id,
+          address: formattedData,
+        });
+      } else {
+        await createAddressMutation.mutateAsync(formattedData);
+      }
+    } catch (error) {
+      console.error("Error submitting address form:", error);
     }
   };
 

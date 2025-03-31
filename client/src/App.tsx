@@ -19,6 +19,7 @@ import CheckoutPage from "@/pages/checkout-page";
 import ScentFinderPage from "@/pages/scent-finder-page";
 import AccountPage from "@/pages/account-page";
 import OrdersPage from "@/pages/orders-page";
+import OrderDetailPage from "@/pages/order-detail-page";
 import AddressesPage from "@/pages/addresses-page";
 import NotFound from "@/pages/not-found";
 
@@ -35,6 +36,7 @@ function Router() {
         <Route path="/scent-finder" component={ScentFinderPage} />
         <ProtectedRoute path="/account" component={AccountPage} />
         <ProtectedRoute path="/orders" component={OrdersPage} />
+        <ProtectedRoute path="/orders/:id" component={OrderDetailPage} />
         <ProtectedRoute path="/addresses" component={AddressesPage} />
         <Route path="/:rest*" component={NotFound} />
       </Switch>
