@@ -7,6 +7,7 @@ import { users, products, categories, carts, cartItems, orders, orderItems,
   InsertWishlist, Address, InsertAddress, Review, InsertReview, 
   NewsletterSubscription, InsertNewsletterSubscription, Enquiry, InsertEnquiry } from "@shared/schema";
 import session from "express-session";
+import { Store } from "express-session";
 import createMemoryStore from "memorystore";
 
 const MemoryStore = createMemoryStore(session);
@@ -82,7 +83,7 @@ export interface IStorage {
   getLifestyleItems(): Promise<any[]>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
 }
 
 export class MemStorage implements IStorage {
@@ -122,7 +123,7 @@ export class MemStorage implements IStorage {
   private scentProfileIdCounter = 1;
   private moodIdCounter = 1;
   
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
   
   constructor() {
     this.sessionStore = new MemoryStore({
@@ -781,4 +782,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Import the DbStorage implementation
+import { DbStorage } from './db-storage';
+
+// Use DbStorage instead of MemStorage for database persistence
+export const storage = new DbStorage();

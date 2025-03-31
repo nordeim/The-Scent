@@ -1,8 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
-import { storage } from "./storage";
+// Import from db-storage instead of storage
+import { DbStorage } from "./db-storage";
 import { insertNewsletterSubscriptionSchema, insertEnquirySchema, insertReviewSchema, insertCartItemSchema, insertWishlistSchema } from "@shared/schema";
+
+// Use DbStorage instead of MemStorage
+const storage = new DbStorage();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth routes
