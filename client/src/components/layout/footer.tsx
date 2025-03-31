@@ -3,7 +3,7 @@ import {
   InstagramIcon, 
   FacebookIcon, 
   TwitterIcon, 
-  PinterestIcon, 
+  YoutubeIcon, 
   MapPinIcon, 
   PhoneIcon, 
   MailIcon 
@@ -68,8 +68,8 @@ export function Footer() {
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition">
                 <InstagramIcon className="h-5 w-5" />
               </a>
-              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition">
-                <PinterestIcon className="h-5 w-5" />
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition">
+                <YoutubeIcon className="h-5 w-5" />
               </a>
               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition">
                 <TwitterIcon className="h-5 w-5" />
