@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { apiRequest } from "@/lib/queryClient";
 
 const addressSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -34,8 +35,8 @@ export function AddressForm({ onComplete }: AddressFormProps) {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Get user's saved addresses (in a real app)
-  const { data: addresses, isLoading: addressesLoading } = useQuery({
+  // Get user's saved addresses
+  const { data: addresses = [], isLoading: addressesLoading } = useQuery({
     queryKey: ["/api/addresses"],
     enabled: !!user
   });
@@ -77,18 +78,58 @@ export function AddressForm({ onComplete }: AddressFormProps) {
           phone: address.phone || user?.phone || "",
           saveAddress: false
         });
+        
+        // When the user selects a saved address from the dropdown, we can
+        // handle the submission more directly by using that saved address object
+        // which already has an ID in the database
+        if (selectedSavedAddress) {
+          const submitButton = document.querySelector('button[type="submit"]');
+          
+          // Add click event handler to the submit button
+          const handleSubmitClick = () => {
+            // Prevent the normal form submission by directly calling onComplete
+            // with the saved address that already has an ID
+            if (address && address.id) {
+              onComplete(address);
+            }
+          };
+          
+          if (submitButton) {
+            submitButton.addEventListener('click', handleSubmitClick, { once: true });
+          }
+        }
       }
     }
-  }, [selectedSavedAddress, addresses, form, user]);
+  }, [selectedSavedAddress, addresses, form, user, onComplete]);
   
   const onSubmit = async (data: AddressFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // In a real app, you'd save the address if saveAddress is true
-      // await apiRequest("POST", "/api/addresses", data);
-      
-      onComplete(data);
+      // If user selects to save the address or if we need it for an order,
+      // save the address to the database
+      if (data.saveAddress || user) {
+        // Clean the data for API submission
+        const addressData = {
+          userId: user?.id,
+          addressLine1: data.addressLine1,
+          addressLine2: data.addressLine2 || undefined,
+          city: data.city,
+          state: data.state,
+          postalCode: data.postalCode,
+          country: data.country,
+          isDefault: false // Don't make checkout addresses default unless specified
+        };
+        
+        const res = await apiRequest("POST", "/api/addresses", addressData);
+        const savedAddress = await res.json();
+        
+        // Pass the saved address with a database ID to the checkout process
+        onComplete(savedAddress);
+      } else {
+        // Just return the form data if not saving
+        onComplete(data);
+      }
     } catch (error) {
       console.error("Error saving address:", error);
     } finally {
@@ -99,7 +140,7 @@ export function AddressForm({ onComplete }: AddressFormProps) {
   return (
     <div>
       {/* Saved Addresses Dropdown (if user has saved addresses) */}
-      {addresses && addresses.length > 0 && (
+      {addresses.length > 0 && (
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2">Use a saved address</label>
           <Select
@@ -111,7 +152,7 @@ export function AddressForm({ onComplete }: AddressFormProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Enter a new address</SelectItem>
-              {addresses.map((address: any) => (
+              {Array.isArray(addresses) && addresses.map((address: any) => (
                 <SelectItem key={address.id} value={address.id.toString()}>
                   {address.addressLine1}, {address.city}
                 </SelectItem>

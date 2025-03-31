@@ -98,10 +98,15 @@ export default function AddressesPage() {
 
   const createAddressMutation = useMutation({
     mutationFn: async (data: z.infer<typeof addressFormSchema>) => {
-      const res = await apiRequest("POST", "/api/addresses", {
+      // Clean up the data to remove null values
+      const cleanedData = { 
         ...data,
         userId: user?.id,
-      });
+        addressLine2: data.addressLine2 || undefined,
+        isDefault: data.isDefault === null ? false : data.isDefault
+      };
+      
+      const res = await apiRequest("POST", "/api/addresses", cleanedData);
       return await res.json();
     },
     onSuccess: () => {
@@ -124,7 +129,14 @@ export default function AddressesPage() {
 
   const updateAddressMutation = useMutation({
     mutationFn: async (data: { id: number; address: Partial<Address> }) => {
-      const res = await apiRequest("PUT", `/api/addresses/${data.id}`, data.address);
+      // Clean up the data to remove null values
+      const cleanedAddress = {
+        ...data.address,
+        addressLine2: data.address.addressLine2 || undefined,
+        isDefault: data.address.isDefault === null ? false : data.address.isDefault
+      };
+      
+      const res = await apiRequest("PUT", `/api/addresses/${data.id}`, cleanedAddress);
       return await res.json();
     },
     onSuccess: () => {
