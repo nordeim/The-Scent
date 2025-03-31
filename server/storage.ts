@@ -29,6 +29,7 @@ export interface IStorage {
   getProducts(limit?: number, offset?: number): Promise<Product[]>;
   getFeaturedProducts(): Promise<Product[]>;
   getProductsByCategory(categoryId: number): Promise<Product[]>;
+  getProductById(id: number): Promise<Product | undefined>;
   getProductBySku(sku: string): Promise<Product | undefined>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
@@ -465,6 +466,10 @@ export class MemStorage implements IStorage {
   
   async getProductBySku(sku: string): Promise<Product | undefined> {
     return Array.from(this.productMap.values()).find(p => p.sku === sku);
+  }
+  
+  async getProductById(id: number): Promise<Product | undefined> {
+    return this.productMap.get(id);
   }
   
   async getProductBySlug(slug: string): Promise<Product | undefined> {

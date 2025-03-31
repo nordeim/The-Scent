@@ -129,12 +129,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get cart items with product details
       const cartItems = await storage.getCartItems(cart.id);
       const itemsWithDetails = await Promise.all(cartItems.map(async (item) => {
-        const product = await storage.getProductBySlug(item.productId.toString());
+        // Fetch product by ID, not slug
+        const product = await storage.getProductById(item.productId);
+        if (!product) {
+          console.error(`Product with ID ${item.productId} not found`);
+          return null;
+        }
         return {
           ...item,
           product
         };
-      }));
+      })).then(items => items.filter(item => item !== null));
       
       res.json({
         ...cart,
@@ -236,12 +241,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get product details for each item
       const itemsWithDetails = await Promise.all(wishlistItems.map(async (item) => {
-        const product = await storage.getProductBySlug(item.productId.toString());
+        // Fetch product by ID, not slug
+        const product = await storage.getProductById(item.productId);
+        if (!product) {
+          console.error(`Product with ID ${item.productId} not found`);
+          return null;
+        }
         return {
           ...item,
           product
         };
-      }));
+      })).then(items => items.filter(item => item !== null));
       
       res.json(itemsWithDetails);
     } catch (error: any) {

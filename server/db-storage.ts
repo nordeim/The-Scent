@@ -117,6 +117,13 @@ export class DbStorage implements IStorage {
     return result;
   }
 
+  async getProductById(id: number): Promise<Product | undefined> {
+    const result = await db.query.products.findFirst({
+      where: eq(products.id, id)
+    });
+    return result;
+  }
+
   async getProductBySlug(slug: string): Promise<Product | undefined> {
     const result = await db.query.products.findFirst({
       where: eq(products.slug, slug)
