@@ -376,6 +376,12 @@ export class DbStorage implements IStorage {
     });
     return result;
   }
+  
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return await db.query.orderItems.findMany({
+      where: eq(orderItems.orderId, orderId)
+    });
+  }
 
   async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
     const [result] = await db.update(orders)

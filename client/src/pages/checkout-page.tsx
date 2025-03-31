@@ -35,25 +35,80 @@ export default function CheckoutPage() {
     setStep("payment");
   };
   
-  const handlePaymentComplete = (paymentDetails: any) => {
-    // In a real app, this would send data to the server to create the order
-    // For now, we'll simulate order creation
-    
-    // Generate a random order number
-    const generatedOrderNumber = `ORD-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
-    setOrderNumber(generatedOrderNumber);
-    
-    // Show success toast
-    toast({
-      title: "Order placed successfully!",
-      description: `Your order #${generatedOrderNumber} has been confirmed.`,
-    });
-    
-    // Clear the cart
-    clearCart();
-    
-    // Move to confirmation step
-    setStep("confirmation");
+  const handlePaymentComplete = async (paymentDetails: any) => {
+    try {
+      // Get the cart items to create an order
+      if (!cart || !cart.items || !shippingAddress) {
+        toast({
+          title: "Error",
+          description: "Missing cart items or shipping address",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Create an order in the database
+      const orderData = {
+        userId: user?.id,
+        total: cart.items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0).toString(),
+        shippingAddressId: shippingAddress.id, 
+        billingAddressId: shippingAddress.id, // Using same address for billing and shipping
+        orderNumber: `ORD-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+        status: "pending",
+        paymentStatus: "completed",
+        stripePaymentIntentId: paymentDetails?.paymentIntentId || Date.now().toString(),
+      };
+      
+      // Send the order to the server
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (!orderResponse.ok) {
+        throw new Error("Failed to create order");
+      }
+      
+      // Get the created order
+      const order = await orderResponse.json();
+      setOrderNumber(order.orderNumber);
+      
+      // Create order items
+      const orderItemPromises = cart.items.map(item => 
+        fetch('/api/order-items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: order.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: parseFloat(item.product.price).toString()
+          })
+        })
+      );
+      
+      await Promise.all(orderItemPromises);
+      
+      // Show success toast
+      toast({
+        title: "Order placed successfully!",
+        description: `Your order #${order.orderNumber} has been confirmed.`,
+      });
+      
+      // Clear the cart
+      clearCart();
+      
+      // Move to confirmation step
+      setStep("confirmation");
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        title: "Error placing order",
+        description: "There was a problem processing your order. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   return (

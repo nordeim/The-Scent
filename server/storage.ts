@@ -66,6 +66,7 @@ export interface IStorage {
   addOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getUserOrders(userId: number): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
+  getOrderItems(orderId: number): Promise<OrderItem[]>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
   
   // Review methods
@@ -696,6 +697,11 @@ export class MemStorage implements IStorage {
   
   async getOrder(id: number): Promise<Order | undefined> {
     return this.orderMap.get(id);
+  }
+  
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return Array.from(this.orderItemMap.values())
+      .filter(item => item.orderId === orderId);
   }
   
   async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {

@@ -3,7 +3,14 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 // Import from db-storage instead of storage
 import { DbStorage } from "./db-storage";
-import { insertNewsletterSubscriptionSchema, insertEnquirySchema, insertReviewSchema, insertCartItemSchema, insertWishlistSchema } from "@shared/schema";
+import Stripe from "stripe";
+import { insertNewsletterSubscriptionSchema, insertEnquirySchema, insertReviewSchema, insertCartItemSchema, insertWishlistSchema, insertAddressSchema } from "@shared/schema";
+
+// Initialize Stripe
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Use DbStorage instead of MemStorage
 const storage = new DbStorage();
@@ -381,6 +388,238 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const items = await storage.getLifestyleItems();
       res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Orders routes
+  // Create a new order
+  app.post("/api/orders", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      
+      // Validate the order data
+      const orderData = {
+        ...req.body,
+        userId
+      };
+      
+      // Create the order
+      const order = await storage.createOrder(orderData);
+      res.status(201).json(order);
+    } catch (error: any) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Create order items
+  app.post("/api/order-items", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const orderItem = await storage.addOrderItem(req.body);
+      res.status(201).json(orderItem);
+    } catch (error: any) {
+      console.error("Error creating order item:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/orders", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      const orders = await storage.getUserOrders(userId);
+      
+      // Get order items for each order
+      const ordersWithItems = await Promise.all(orders.map(async (order) => {
+        const items = await storage.getOrderItems(order.id);
+        return {
+          ...order,
+          items
+        };
+      }));
+      
+      res.json(ordersWithItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/orders/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const orderId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Ensure the order belongs to the authenticated user
+      if (order.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const items = await storage.getOrderItems(orderId);
+      
+      res.json({
+        ...order,
+        items
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Stripe payment intent creation
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      // Get the cart total and currency from the client
+      const { amount = 100, currency = "usd" } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ 
+          error: "Invalid amount. Amount must be greater than 0." 
+        });
+      }
+      
+      // Create a PaymentIntent with the order amount and currency
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(parseFloat(amount) * 100), // Convert to cents
+        currency: currency.toLowerCase(),
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          // Add metadata to track the payment in Stripe dashboard
+          integration_check: 'the_scent_payment',
+          amount_original: amount.toString()
+        }
+      });
+      
+      // Return the client secret to the client
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        amount: amount,
+        currency: currency
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ 
+        error: "Failed to process payment",
+        details: error.message 
+      });
+    }
+  });
+
+  // Addresses routes
+  app.get("/api/addresses", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      const addresses = await storage.getUserAddresses(userId);
+      res.json(addresses);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/addresses", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      
+      // Validate request body
+      const validatedData = insertAddressSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      // Create address
+      const newAddress = await storage.createAddress(validatedData);
+      res.status(201).json(newAddress);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/addresses/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const addressId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Get the address to check ownership
+      const address = await storage.getAddress(addressId);
+      
+      if (!address) {
+        return res.status(404).json({ message: "Address not found" });
+      }
+      
+      // Ensure the address belongs to the authenticated user
+      if (address.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Update address
+      const updatedAddress = await storage.updateAddress(addressId, req.body);
+      res.json(updatedAddress);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/addresses/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    try {
+      const addressId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Get the address to check ownership
+      const address = await storage.getAddress(addressId);
+      
+      if (!address) {
+        return res.status(404).json({ message: "Address not found" });
+      }
+      
+      // Ensure the address belongs to the authenticated user
+      if (address.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Delete address
+      await storage.deleteAddress(addressId);
+      res.status(204).end();
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

@@ -444,16 +444,18 @@ export default function AddressesPage() {
                 />
                 
                 <div className="flex justify-end gap-2 pt-2">
-                  <DialogClose asChild>
-                    <Button type="button" variant="outline">
-                      Cancel
-                    </Button>
-                  </DialogClose>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                   <Button 
                     type="submit"
-                    disabled={form.formState.isSubmitting}
+                    disabled={form.formState.isSubmitting || createAddressMutation.isPending || updateAddressMutation.isPending}
                   >
-                    {form.formState.isSubmitting ? (
+                    {form.formState.isSubmitting || createAddressMutation.isPending || updateAddressMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Saving...

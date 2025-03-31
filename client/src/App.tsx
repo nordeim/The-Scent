@@ -7,6 +7,7 @@ import { CartProvider } from "@/hooks/use-cart";
 import { WishlistProvider } from "@/hooks/use-wishlist";
 import { RootLayout } from "./layout/root-layout";
 import { ProtectedRoute } from "./lib/protected-route";
+import { ReactElement } from "react";
 
 // Pages
 import HomePage from "@/pages/home-page";
@@ -35,7 +36,7 @@ function Router() {
         <ProtectedRoute path="/account" component={AccountPage} />
         <ProtectedRoute path="/orders" component={OrdersPage} />
         <ProtectedRoute path="/addresses" component={AddressesPage} />
-        <Route component={NotFound} />
+        <Route path="/:rest*" component={NotFound} />
       </Switch>
     </RootLayout>
   );
