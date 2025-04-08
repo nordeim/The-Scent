@@ -1123,18 +1123,50 @@ export class MemStorage implements IStorage {
 // Import the DbStorage implementation
 import { DbStorage } from './db-storage';
 
+// Import our fixed storage implementation with 15 products
+import { FixedMemStorage } from './fix-product-display';
+
 // Try to use DbStorage with fallback to MemStorage 
 let chosenStorage: IStorage;
 
-try {
-  // Attempt to create a DbStorage
-  chosenStorage = new DbStorage();
-  console.log('Using PostgreSQL database for storage');
-} catch (error) {
-  // Fallback to MemStorage if DatabaseStorage fails
-  console.warn('Failed to connect to PostgreSQL database:', error);
-  console.warn('Falling back to in-memory storage - data will not persist between restarts');
-  chosenStorage = new MemStorage();
+// Set to true to force MemStorage usage (for debugging/development)
+const forceMemStorage = true;
+
+if (forceMemStorage) {
+  console.log('Using fixed in-memory storage with 15 products (forced)');
+  chosenStorage = new FixedMemStorage();
+} else {
+  try {
+    // Attempt to create a DbStorage
+    chosenStorage = new DbStorage();
+    
+    // Test the connection to make sure it actually works
+    const testConnection = async () => {
+      try {
+        await chosenStorage.getCategories();
+        console.log('PostgreSQL database connection successful');
+        return true;
+      } catch (error) {
+        console.error('Database connection test failed:', error);
+        return false;
+      }
+    };
+    
+    // If connection test fails, switch to FixedMemStorage
+    testConnection().then(success => {
+      if (!success) {
+        console.warn('Falling back to in-memory storage after connection test failure');
+        chosenStorage = new FixedMemStorage();
+      }
+    });
+    
+    console.log('Using PostgreSQL database for storage');
+  } catch (error) {
+    // Fallback to FixedMemStorage if DatabaseStorage fails
+    console.warn('Failed to connect to PostgreSQL database:', error);
+    console.warn('Falling back to in-memory storage - data will not persist between restarts');
+    chosenStorage = new FixedMemStorage();
+  }
 }
 
 export const storage = chosenStorage;
