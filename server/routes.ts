@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
-// Import from db-storage instead of storage
-import { DbStorage } from "./db-storage";
+// Import from storage.ts which now uses MemStorage
+import { storage } from "./storage";
 import Stripe from "stripe";
 import { insertNewsletterSubscriptionSchema, insertEnquirySchema, insertReviewSchema, insertCartItemSchema, insertWishlistSchema, insertAddressSchema } from "@shared/schema";
 
@@ -11,9 +11,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Use DbStorage instead of MemStorage
-const storage = new DbStorage();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth routes

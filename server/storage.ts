@@ -142,21 +142,21 @@ export class MemStorage implements IStorage {
       name: "Essential Oils",
       slug: "essential-oils", 
       description: "Pure, therapeutic-grade oils to elevate your mood and environment.",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent2.jpg"
+      imageUrl: "/images/scent2.jpg"
     });
     
     const naturalSoaps = this.createCategory({
       name: "Natural Soaps",
       slug: "natural-soaps", 
       description: "Handcrafted soaps made with premium natural ingredients.",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/soap2.jpg"
+      imageUrl: "/images/soap2.jpg"
     });
     
     const giftSets = this.createCategory({
       name: "Gift Sets",
       slug: "gift-sets", 
       description: "Curated collections perfect for gifting or treating yourself.",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent6.jpg"
+      imageUrl: "/images/scent6.jpg"
     });
     
     // Initialize scent profiles
@@ -191,6 +191,30 @@ export class MemStorage implements IStorage {
       iconClass: "fa-pepper-hot"
     };
     this.scentProfileMap.set(spicy.id, spicy);
+    
+    const herbal = {
+      id: this.scentProfileIdCounter++,
+      name: "Herbal",
+      description: "Natural, green herbal aromas",
+      iconClass: "fa-leaf"
+    };
+    this.scentProfileMap.set(herbal.id, herbal);
+    
+    const fresh = {
+      id: this.scentProfileIdCounter++,
+      name: "Fresh",
+      description: "Clean, crisp refreshing scents",
+      iconClass: "fa-tint"
+    };
+    this.scentProfileMap.set(fresh.id, fresh);
+    
+    const sweet = {
+      id: this.scentProfileIdCounter++,
+      name: "Sweet",
+      description: "Rich, sweet dessert-like notes",
+      iconClass: "fa-cookie"
+    };
+    this.scentProfileMap.set(sweet.id, sweet);
     
     // Initialize moods
     const relaxation = {
@@ -232,7 +256,7 @@ export class MemStorage implements IStorage {
       price: "24.99",
       description: "Our pure lavender essential oil is sourced from high-altitude lavender fields, ensuring the highest quality oil with a rich, floral scent. Known for its calming properties, this versatile essential oil can help reduce anxiety, improve sleep quality, and promote relaxation.",
       shortDescription: "Pure, calming lavender for relaxation",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent4.jpg",
+      imageUrl: "/images/scent4.jpg",
       featured: true,
       reviewCount: 48,
       averageRating: "4.5",
@@ -274,7 +298,7 @@ export class MemStorage implements IStorage {
       price: "22.99",
       description: "Our eucalyptus essential oil is steam-distilled from eucalyptus leaves to preserve its fresh, invigorating scent and therapeutic properties. This refreshing oil is known for its ability to clear the mind, support respiratory health, and provide a revitalizing effect on the senses.",
       shortDescription: "Refreshing and clearing for the mind",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent5.jpg",
+      imageUrl: "/images/scent5.jpg",
       featured: true,
       reviewCount: 36,
       averageRating: "4.0",
@@ -283,13 +307,39 @@ export class MemStorage implements IStorage {
       sku: "EO-EUC-001"
     });
     
+    // Add product ingredients for eucalyptus oil
+    this.productIngredientMap.set(eucalyptusOil.id, [
+      "100% Pure Eucalyptus globulus Oil",
+      "No fillers, additives, bases, or carriers"
+    ]);
+    
+    // Add product benefits for eucalyptus oil
+    this.productBenefitMap.set(eucalyptusOil.id, [
+      "Supports respiratory health",
+      "Clears the mind and improves focus",
+      "Provides a refreshing, invigorating scent",
+      "Helps purify the air"
+    ]);
+    
+    // Add product scent profiles for eucalyptus oil
+    this.productScentProfileMap.set(eucalyptusOil.id, [
+      { scentProfileId: herbal.id, intensity: 7 },
+      { scentProfileId: fresh.id, intensity: 9 }
+    ]);
+    
+    // Add product moods for eucalyptus oil
+    this.productMoodMap.set(eucalyptusOil.id, [
+      { moodId: energy.id, effectiveness: 8 },
+      { moodId: focus.id, effectiveness: 7 }
+    ]);
+    
     const lavenderSoap = this.createProduct({
       name: "Lavender Infused Soap",
       slug: "lavender-infused-soap",
       price: "12.99",
       description: "Our lavender infused soap combines our premium lavender essential oil with nourishing ingredients to create a gentle cleansing experience. Handcrafted in small batches to ensure quality, this soap leaves your skin feeling soft and subtly scented with calming lavender.",
       shortDescription: "Gentle cleansing with calming scent",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/soap4.jpg",
+      imageUrl: "/images/soap4.jpg",
       featured: true,
       reviewCount: 52,
       averageRating: "5.0",
@@ -298,13 +348,30 @@ export class MemStorage implements IStorage {
       sku: "NS-LAV-001"
     });
     
+    // Add product ingredients for lavender soap
+    this.productIngredientMap.set(lavenderSoap.id, [
+      "Saponified Oils of Olive, Coconut, and Palm",
+      "Lavender Essential Oil",
+      "Shea Butter",
+      "Vitamin E",
+      "Purified Water"
+    ]);
+    
+    // Add product benefits for lavender soap
+    this.productBenefitMap.set(lavenderSoap.id, [
+      "Gently cleanses without stripping natural oils",
+      "Relaxing lavender scent helps reduce stress",
+      "Moisturizes and soothes skin",
+      "Suitable for sensitive skin"
+    ]);
+    
     const citrusSoap = this.createProduct({
       name: "Citrus Fresh Soap",
       slug: "citrus-fresh-soap",
       price: "14.99",
       description: "Invigorate your morning routine with our Citrus Fresh Soap. This energizing blend combines sweet orange, lemon, and grapefruit essential oils to awaken your senses, while coconut oil and shea butter gently cleanse and moisturize your skin.",
       shortDescription: "Uplifting blend for energy and focus",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/soap5.jpg",
+      imageUrl: "/images/soap5.jpg",
       featured: true,
       reviewCount: 41,
       averageRating: "4.5",
@@ -313,13 +380,273 @@ export class MemStorage implements IStorage {
       sku: "NS-CIT-001"
     });
     
+    // Add product ingredients for citrus soap
+    this.productIngredientMap.set(citrusSoap.id, [
+      "Saponified Oils of Olive, Coconut, and Palm",
+      "Sweet Orange Essential Oil",
+      "Lemon Essential Oil",
+      "Grapefruit Essential Oil",
+      "Shea Butter",
+      "Vitamin E",
+      "Purified Water"
+    ]);
+    
+    // Add product benefits for citrus soap
+    this.productBenefitMap.set(citrusSoap.id, [
+      "Energizes and uplifts the mood",
+      "Gently exfoliates with natural citrus acids",
+      "Moisturizes with shea butter",
+      "Suitable for morning use to boost energy"
+    ]);
+    
+    const handcraftedSoap1 = this.createProduct({
+      name: "Vanilla Oatmeal Soap",
+      slug: "vanilla-oatmeal-soap",
+      price: "11.99",
+      description: "Our Vanilla Oatmeal Soap combines the gentle exfoliation of ground oatmeal with the comforting scent of vanilla. Perfect for sensitive skin, this soap helps soothe irritation while providing a warm, cozy scent experience.",
+      shortDescription: "Comforting vanilla with gentle exfoliation",
+      imageUrl: "/images/soap1.jpg",
+      featured: false,
+      reviewCount: 29,
+      averageRating: "4.7",
+      categoryId: naturalSoaps.id,
+      stock: 65,
+      sku: "NS-VAN-001"
+    });
+    
+    const rosemaryMintSoap = this.createProduct({
+      name: "Rosemary Mint Soap",
+      slug: "rosemary-mint-soap",
+      price: "13.99",
+      description: "Wake up your senses with our invigorating Rosemary Mint Soap. Combining the herbaceous aroma of rosemary with the cool freshness of peppermint, this soap provides a stimulating shower experience that helps clear the mind and refresh the body.",
+      shortDescription: "Stimulating soap for morning freshness",
+      imageUrl: "/images/soap3.jpg",
+      featured: false,
+      reviewCount: 32,
+      averageRating: "4.6",
+      categoryId: naturalSoaps.id,
+      stock: 75,
+      sku: "NS-RM-001"
+    });
+    
+    const honeySoap = this.createProduct({
+      name: "Honey Almond Soap",
+      slug: "honey-almond-soap",
+      price: "15.99",
+      description: "Our Honey Almond Soap is a luxurious blend of raw honey and sweet almond oil that creates a nourishing, moisturizing lather. Rich in antioxidants, this soap helps to hydrate and protect the skin while delivering a warm, comforting scent.",
+      shortDescription: "Nourishing honey for soft, hydrated skin",
+      imageUrl: "/images/soap6.jpg",
+      featured: false,
+      reviewCount: 24,
+      averageRating: "4.8",
+      categoryId: naturalSoaps.id,
+      stock: 55,
+      sku: "NS-HA-001"
+    });
+    
+    const cedarwoodSage = this.createProduct({
+      name: "Cedarwood Sage Essential Oil",
+      slug: "cedarwood-sage-essential-oil",
+      price: "27.99",
+      description: "Our Cedarwood Sage Essential Oil blend combines the grounding properties of cedarwood with the purifying effects of sage. This earthy, woody blend is perfect for creating a centered atmosphere and promoting mental clarity.",
+      shortDescription: "Grounding blend for focus and clarity",
+      imageUrl: "/images/scent1.jpg",
+      featured: false,
+      reviewCount: 19,
+      averageRating: "4.7",
+      categoryId: essentialOils.id,
+      stock: 60,
+      sku: "EO-CS-001"
+    });
+    
+    // Add product ingredients for cedarwood sage
+    this.productIngredientMap.set(cedarwoodSage.id, [
+      "Cedrus atlantica (Cedarwood) Oil",
+      "Salvia officinalis (Sage) Oil",
+      "Bergamot Oil",
+      "No fillers, additives, bases, or carriers"
+    ]);
+    
+    // Add product benefits for cedarwood sage
+    this.productBenefitMap.set(cedarwoodSage.id, [
+      "Promotes focus and mental clarity",
+      "Creates a grounding atmosphere",
+      "Helps reduce mental fatigue",
+      "Supports emotional balance"
+    ]);
+    
+    // Add product scent profiles for cedarwood sage
+    this.productScentProfileMap.set(cedarwoodSage.id, [
+      { scentProfileId: woody.id, intensity: 9 },
+      { scentProfileId: herbal.id, intensity: 7 },
+      { scentProfileId: fresh.id, intensity: 4 }
+    ]);
+    
+    // Add product moods for cedarwood sage
+    this.productMoodMap.set(cedarwoodSage.id, [
+      { moodId: focus.id, effectiveness: 9 },
+      { moodId: balance.id, effectiveness: 7 }
+    ]);
+    
+    const teatreeSoap = this.createProduct({
+      name: "Tea Tree Charcoal Soap",
+      slug: "tea-tree-charcoal-soap",
+      price: "14.99",
+      description: "Our Tea Tree Charcoal Soap combines the purifying properties of activated charcoal with the antibacterial benefits of tea tree oil. This powerful combination helps draw impurities from the skin while tea tree oil works to cleanse and refresh.",
+      shortDescription: "Deep cleansing for problematic skin",
+      imageUrl: "/images/soap2.jpg",
+      featured: false,
+      reviewCount: 37,
+      averageRating: "4.9",
+      categoryId: naturalSoaps.id,
+      stock: 80,
+      sku: "NS-TTC-001"
+    });
+    
+    // Add product ingredients for tea tree soap
+    this.productIngredientMap.set(teatreeSoap.id, [
+      "Saponified Oils of Olive, Coconut, and Palm",
+      "Melaleuca alternifolia (Tea Tree) Oil",
+      "Activated Charcoal",
+      "Vitamin E",
+      "Purified Water"
+    ]);
+    
+    // Add product benefits for tea tree soap
+    this.productBenefitMap.set(teatreeSoap.id, [
+      "Draws out skin impurities with activated charcoal",
+      "Helps fight bacteria with tea tree oil",
+      "Provides a deep cleansing action",
+      "Suitable for oily or problematic skin"
+    ]);
+
+    const peppermintSoap = this.createProduct({
+      name: "Peppermint Exfoliating Soap",
+      slug: "peppermint-exfoliating-soap",
+      price: "13.99",
+      description: "Our Peppermint Exfoliating Soap delivers an invigorating experience with the cooling sensation of peppermint essential oil. Combined with ground oatmeal for gentle exfoliation, this soap leaves your skin feeling refreshed, smooth, and softly scented.",
+      shortDescription: "Cooling and exfoliating for fresh skin",
+      imageUrl: "/images/soap7.jpg",
+      featured: false,
+      reviewCount: 28,
+      averageRating: "4.6",
+      categoryId: naturalSoaps.id,
+      stock: 70,
+      sku: "NS-PEP-001"
+    });
+    
+    // Add product ingredients for peppermint soap
+    this.productIngredientMap.set(peppermintSoap.id, [
+      "Saponified Oils of Olive, Coconut, and Palm",
+      "Mentha piperita (Peppermint) Oil",
+      "Ground Oatmeal",
+      "Shea Butter",
+      "Vitamin E",
+      "Purified Water"
+    ]);
+    
+    // Add product benefits for peppermint soap
+    this.productBenefitMap.set(peppermintSoap.id, [
+      "Provides cooling sensation to the skin",
+      "Gently exfoliates with ground oatmeal",
+      "Refreshes and energizes",
+      "Helps stimulate circulation"
+    ]);
+    
+    const lemongrass = this.createProduct({
+      name: "Lemongrass Ginger Essential Oil",
+      slug: "lemongrass-ginger-essential-oil",
+      price: "25.99",
+      description: "Our Lemongrass Ginger Essential Oil blend combines the uplifting citrus properties of lemongrass with the warming spice of ginger. This energizing combination helps stimulate the senses, boost energy levels, and create an atmosphere of positivity.",
+      shortDescription: "Energizing blend for positivity and clarity",
+      imageUrl: "/images/scent3.jpg",
+      featured: false,
+      reviewCount: 24,
+      averageRating: "4.8",
+      categoryId: essentialOils.id,
+      stock: 65,
+      sku: "EO-LG-001"
+    });
+    
+    // Add product ingredients for lemongrass ginger
+    this.productIngredientMap.set(lemongrass.id, [
+      "Cymbopogon flexuosus (Lemongrass) Oil",
+      "Zingiber officinale (Ginger) Oil",
+      "Citrus paradisi (Grapefruit) Oil",
+      "No fillers, additives, bases, or carriers"
+    ]);
+    
+    // Add product benefits for lemongrass ginger
+    this.productBenefitMap.set(lemongrass.id, [
+      "Boosts energy and reduces fatigue",
+      "Helps improve mental clarity",
+      "Creates an uplifting atmosphere",
+      "Supports digestive comfort"
+    ]);
+    
+    // Add product scent profiles for lemongrass ginger
+    this.productScentProfileMap.set(lemongrass.id, [
+      { scentProfileId: citrus.id, intensity: 8 },
+      { scentProfileId: spicy.id, intensity: 6 },
+      { scentProfileId: herbal.id, intensity: 4 }
+    ]);
+    
+    // Add product moods for lemongrass ginger
+    this.productMoodMap.set(lemongrass.id, [
+      { moodId: energy.id, effectiveness: 9 },
+      { moodId: focus.id, effectiveness: 6 }
+    ]);
+    
+    const sandalwoodBlend = this.createProduct({
+      name: "Sandalwood Vanilla Essential Oil",
+      slug: "sandalwood-vanilla-essential-oil",
+      price: "32.99",
+      description: "Our Sandalwood Vanilla Essential Oil blend combines the rich, woody notes of sandalwood with the sweet, comforting scent of vanilla. This luxurious blend is perfect for creating a warm, sensual atmosphere that soothes the mind and nurtures the soul.",
+      shortDescription: "Luxurious blend for comfort and relaxation",
+      imageUrl: "/images/scent7.jpg",
+      featured: false,
+      reviewCount: 31,
+      averageRating: "4.9",
+      categoryId: essentialOils.id,
+      stock: 55,
+      sku: "EO-SV-001"
+    });
+    
+    // Add product ingredients for sandalwood vanilla
+    this.productIngredientMap.set(sandalwoodBlend.id, [
+      "Santalum album (Sandalwood) Oil",
+      "Vanilla planifolia Extract",
+      "Cocos nucifera (Coconut) Oil",
+      "No synthetic additives"
+    ]);
+    
+    // Add product benefits for sandalwood vanilla
+    this.productBenefitMap.set(sandalwoodBlend.id, [
+      "Creates a warm, sensual atmosphere",
+      "Helps reduce anxiety and stress",
+      "Supports deep relaxation",
+      "Provides grounding comfort"
+    ]);
+    
+    // Add product scent profiles for sandalwood vanilla
+    this.productScentProfileMap.set(sandalwoodBlend.id, [
+      { scentProfileId: woody.id, intensity: 8 },
+      { scentProfileId: sweet.id, intensity: 7 }
+    ]);
+    
+    // Add product moods for sandalwood vanilla
+    this.productMoodMap.set(sandalwoodBlend.id, [
+      { moodId: relaxation.id, effectiveness: 9 },
+      { moodId: balance.id, effectiveness: 8 }
+    ]);
+    
     const signatureBlend = this.createProduct({
       name: "Signature Blend Essential Oil",
       slug: "signature-blend-essential-oil",
       price: "29.99",
       description: "Our signature essential oil blend is carefully crafted to promote relaxation and mental clarity. This unique formulation combines lavender, bergamot, and sandalwood to create a harmonious balance that soothes the mind and rejuvenates the spirit.",
       shortDescription: "Our exclusive blend for relaxation and clarity",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent2.jpg",
+      imageUrl: "/images/scent2.jpg",
       featured: true,
       reviewCount: 63,
       averageRating: "4.8",
@@ -346,10 +673,10 @@ export class MemStorage implements IStorage {
     
     // Add product images for signature blend
     this.productImageMap.set(signatureBlend.id, [
-      "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent2.jpg",
-      "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent4.jpg",
-      "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent5.jpg",
-      "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent6.jpg"
+      "/images/scent2.jpg",
+      "/images/scent4.jpg",
+      "/images/scent5.jpg",
+      "/images/scent6.jpg"
     ]);
     
     // Add product scent profiles for signature blend
@@ -371,7 +698,7 @@ export class MemStorage implements IStorage {
       id: 1,
       title: "Essential Oil Diffusers: A Buyer's Guide",
       description: "Learn how to choose the perfect diffuser for your home and lifestyle.",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent2.jpg",
+      imageUrl: "/images/scent2.jpg",
       link: "/blog/essential-oil-diffusers-guide",
       createdAt: new Date(),
       updatedAt: new Date()
@@ -381,7 +708,7 @@ export class MemStorage implements IStorage {
       id: 2,
       title: "5 Aromatherapy Recipes for Better Sleep",
       description: "Discover custom blends that can help you achieve a more restful night.",
-      imageUrl: "https://raw.githubusercontent.com/nordeim/The-Scent/refs/heads/main/images/scent4.jpg",
+      imageUrl: "/images/scent4.jpg",
       link: "/blog/aromatherapy-for-sleep",
       createdAt: new Date(),
       updatedAt: new Date()
@@ -796,5 +1123,50 @@ export class MemStorage implements IStorage {
 // Import the DbStorage implementation
 import { DbStorage } from './db-storage';
 
-// Use DbStorage instead of MemStorage for database persistence
-export const storage = new DbStorage();
+// Import our fixed storage implementation with 15 products
+import { FixedMemStorage } from './fix-product-display';
+
+// Try to use DbStorage with fallback to MemStorage 
+let chosenStorage: IStorage;
+
+// Set to true to force MemStorage usage (for debugging/development)
+const forceMemStorage = true;
+
+if (forceMemStorage) {
+  console.log('Using fixed in-memory storage with 15 products (forced)');
+  chosenStorage = new FixedMemStorage();
+} else {
+  try {
+    // Attempt to create a DbStorage
+    chosenStorage = new DbStorage();
+    
+    // Test the connection to make sure it actually works
+    const testConnection = async () => {
+      try {
+        await chosenStorage.getCategories();
+        console.log('PostgreSQL database connection successful');
+        return true;
+      } catch (error) {
+        console.error('Database connection test failed:', error);
+        return false;
+      }
+    };
+    
+    // If connection test fails, switch to FixedMemStorage
+    testConnection().then(success => {
+      if (!success) {
+        console.warn('Falling back to in-memory storage after connection test failure');
+        chosenStorage = new FixedMemStorage();
+      }
+    });
+    
+    console.log('Using PostgreSQL database for storage');
+  } catch (error) {
+    // Fallback to FixedMemStorage if DatabaseStorage fails
+    console.warn('Failed to connect to PostgreSQL database:', error);
+    console.warn('Falling back to in-memory storage - data will not persist between restarts');
+    chosenStorage = new FixedMemStorage();
+  }
+}
+
+export const storage = chosenStorage;
