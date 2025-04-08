@@ -1123,5 +1123,18 @@ export class MemStorage implements IStorage {
 // Import the DbStorage implementation
 import { DbStorage } from './db-storage';
 
-// Use DbStorage instead of MemStorage for database persistence
-export const storage = new MemStorage();
+// Try to use DbStorage with fallback to MemStorage 
+let chosenStorage: IStorage;
+
+try {
+  // Attempt to create a DbStorage
+  chosenStorage = new DbStorage();
+  console.log('Using PostgreSQL database for storage');
+} catch (error) {
+  // Fallback to MemStorage if DatabaseStorage fails
+  console.warn('Failed to connect to PostgreSQL database:', error);
+  console.warn('Falling back to in-memory storage - data will not persist between restarts');
+  chosenStorage = new MemStorage();
+}
+
+export const storage = chosenStorage;
